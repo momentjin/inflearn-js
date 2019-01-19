@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>{{ msg }}</h1>
+    여기서부터 코드를 시작합니다!
   </div>
 </template>
 
