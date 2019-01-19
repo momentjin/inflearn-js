@@ -8,8 +8,7 @@
 
 ## 개발환경
 - javascript
-- node js
+- node.js
+- vue.js
 - lite server
 - git
-
-
