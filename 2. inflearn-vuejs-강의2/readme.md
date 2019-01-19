@@ -2,7 +2,7 @@
 > https://www.inflearn.com/course/vuejs
 
 ## 학습 목표
-- vue.js 기초를 넘어 보다 실전적인 부분 학습 (vuex, vue-router)
+- vue.js 실전 스킬 학습 (vuex, vue-router, auth)
 
 ## 개발환경
 - javascript
@@ -10,5 +10,4 @@
 - vue.js
 - vue-router, vuex
 - vue-cli
-- lite server
 - git
