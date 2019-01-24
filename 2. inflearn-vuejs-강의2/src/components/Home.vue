@@ -2,54 +2,68 @@
   <div>
     <div class="home-title">Personal Boards</div>
     <div class="board-list" ref="boardList">
-      <div class="board-item" v-for="b in boards" :key="b.id" :data-bgcolor="b.bgColor" ref="boardItem">
+      <div
+        class="board-item"
+        v-for="b in boards"
+        :key="b.id"
+        :data-bgcolor="b.bgColor"
+        ref="boardItem"
+      >
         <router-link :to="`/b/${b.id}`">
           <div class="board-item-title">{{b.title}}</div>
         </router-link>
       </div>
       <div class="board-item board-item-new">
-        <a class="new-board-btn" href="" @click.prevent="addBoard">
-          Create new board...
-        </a>
+        <a class="new-board-btn" href @click.prevent="addBoard">Create new board...</a>
       </div>
     </div>
+    <AddBoard v-if="isAddBoard" @close="isAddBoard=false" @submit="onAddBoard"/> <!-- 중첩 컴포넌트.. 체계적으로 관리하려면 vuex..! -->
   </div>
 </template>
 <script>
-import {board} from '../api'
+import { board } from "../api";
+import AddBoard from "./AddBoard.vue";
 
 export default {
+  components: {
+    AddBoard
+  },
   data() {
     return {
       loading: false,
       boards: [],
-      error: ''
-    }
+      error: "",
+      isAddBoard: false
+    };
   },
   created() {
-    this.fetchData()
+    this.fetchData();
   },
   updated() {
     this.$refs.boardItem.forEach(el => {
-      el.style.backgroundColor = el.dataset.bgcolor
-    })
+      el.style.backgroundColor = el.dataset.bgcolor;
+    });
   },
   methods: {
     fetchData() {
-      this.loading = true
-      board.fetch()
+      this.loading = true;
+      board
+        .fetch()
         .then(data => {
-          this.boards = data.list
+          this.boards = data.list;
         })
-        .finally(_=> {
-          this.loading = false
-        })
+        .finally(_ => {
+          this.loading = false;
+        });
     },
     addBoard() {
-      console.log('addBoard()')
+      this.isAddBoard = true;
+    },
+    onAddBoard(title) {
+      board.create(title).then(() => this.fetchData());
     }
   }
-}
+};
 </script>
 
 <style>
@@ -80,7 +94,7 @@ export default {
 }
 .board-item a:hover,
 .board-item a:focus {
-  background-color: rgba(0,0,0, .1);
+  background-color: rgba(0, 0, 0, 0.1);
   color: #666;
 }
 .board-item-title {
