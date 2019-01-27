@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-  board
-} from '../api'
+import * as api from '../api'
 
 Vue.use(Vuex) // added vuex on middleware
 
 const store = new Vuex.Store({
   state: {
     isAddBoard: false,
-    boards: []
+    boards: [],
+    token: null
+  },
+  // getter는 기본적으로 state를 인자로 받음
+  getters: {
+      isAuth (state) {
+        return !!state.token
+      }
   },
   // 상태 변이 함수 정의 (only 동기)
   mutations: {
@@ -18,20 +23,39 @@ const store = new Vuex.Store({
     },
     SET_BOARDS(state, boards) {
       state.boards = boards
+    },
+    LOGIN(state, token) {
+        if (!token) return;
+        state.token = token;
+        localStorage.setItem('token', token);
+        api.setAuthInHeader(token);
+    },
+    LOGOUT(state) {
+        state.token = null
+        delete localStorage.token;
+        api.setAuthInHeader(null)
     }
   },
   // 비동기 액션 정의
+  // commit하면 mutation 호출
   actions: {
     ADD_BOARD(_, {title}) {
-      return board.create(title);
+      return api.board.create(title);
     },
     FETCH_BOARDS ({commit}) {
-        return board.fetch().then(data => {
+        return api.board.fetch().then(data => {
                 commit('SET_BOARDS', data.list)
         })
+    },
+    LOGIN({commit}, {email, password}) {
+        return api.auth.login(email, password)
+            .then(({accessToken}) => commit('LOGIN', accessToken));
     }
-
   }
 })
+
+// check token when browser started
+const { token } = localStorage;
+store.commit('LOGIN', token);
 
 export default store
