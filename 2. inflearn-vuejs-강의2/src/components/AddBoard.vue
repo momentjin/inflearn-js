@@ -51,16 +51,13 @@ export default {
     this.$refs.input.focus();
   },
   methods: {
-    ...mapMutations([
-      "SET_IS_ADD_BOARD"
-    ]),
-    ...mapActions([
-      'ADD_BOARD'
-    ]),
+    ...mapMutations(["SET_IS_ADD_BOARD"]),
+    ...mapActions(["ADD_BOARD", "FETCH_BOARDS"]),
     addBoard() {
       this.SET_IS_ADD_BOARD(false);
-      this.$emit('submit');
-      this.ADD_BOARD({title: this.input});
+      this.ADD_BOARD({ title: this.input }).then(() => {
+        this.FETCH_BOARDS();
+      });
     }
   }
 };
