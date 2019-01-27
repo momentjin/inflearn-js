@@ -47,7 +47,6 @@ export default {
       el.style.backgroundColor = el.dataset.bgcolor;
     });
   },
-
   methods: {
     ...mapMutations(["SET_IS_ADD_BOARD"]),
     ...mapActions(["FETCH_BOARDS"]),
