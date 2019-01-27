@@ -14,13 +14,16 @@
         </router-link>
       </div>
       <div class="board-item board-item-new">
-        <a class="new-board-btn" href @click.prevent="addBoard">Create new board...</a>
+        <a class="new-board-btn" href @click.prevent="SET_IS_ADD_BOARD(true)">Create new board...</a>
       </div>
     </div>
-    <AddBoard v-if="isAddBoard" @close="isAddBoard=false" @submit="onAddBoard"/> <!-- 중첩 컴포넌트.. 체계적으로 관리하려면 vuex..! -->
+    <AddBoard v-if="isAddBoard" @submit="onAddBoard"/>
+    <!-- 중첩 컴포넌트.. 체계적으로 관리하려면 vuex..! -->
   </div>
 </template>
+
 <script>
+import { mapState, mapMutations } from "vuex";
 import { board } from "../api";
 import AddBoard from "./AddBoard.vue";
 
@@ -32,9 +35,12 @@ export default {
     return {
       loading: false,
       boards: [],
-      error: "",
-      isAddBoard: false
+      error: ""
+      // isAddBoard: false
     };
+  },
+  computed: {
+    ...mapState(["isAddBoard"])
   },
   created() {
     this.fetchData();
@@ -45,6 +51,7 @@ export default {
     });
   },
   methods: {
+    ...mapMutations(["SET_IS_ADD_BOARD"]),
     fetchData() {
       this.loading = true;
       board
@@ -56,11 +63,9 @@ export default {
           this.loading = false;
         });
     },
-    addBoard() {
-      this.isAddBoard = true;
-    },
     onAddBoard(title) {
-      board.create(title).then(() => this.fetchData());
+      console.log("gdgdgdgdgd," + title);
+      this.fetchData();
     }
   }
 };
