@@ -1,7 +1,7 @@
 <template>
   <div id="app">    
     <Navbar />
-    <router-view></router-view> <!-- routing에 따른 컴포넌트 렌더링 역할 -->
+    <router-view class="container"></router-view> <!-- routing에 따른 컴포넌트 렌더링 역할 -->
   </div>
 </template>
 
