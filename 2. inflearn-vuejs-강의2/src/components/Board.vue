@@ -1,18 +1,18 @@
 <template>
   <div>
     <div class="board-wrapper">
-        <div class="board">
-            <div class="board-header">
-                <span class="board-title"> {{board.title}} </span>
-            </div>
-            <div class="list-section-wrapper">
-                <div class="list-section">
-                    <div class="list-wrapper" v-for="list in board.lists" :key="list.pos"> <!-- :name : name attr 할당 -->
-                        <List :data="list" />
-                    </div>
-                </div>
-            </div>
+      <div class="board">
+        <div class="board-header">
+          <span class="board-title">{{board.title}}</span>
         </div>
+        <div class="list-section-wrapper">
+          <div class="list-section">
+            <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
+              <List :data="list"/>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <router-view></router-view>
   </div>
@@ -20,28 +20,81 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import List from './List.vue';
+import List from "./List.vue";
+import dragula from "dragula";
+import "dragula/dist/dragula.css";
 
 export default {
   components: { List },
   data() {
     return {
       bid: 0,
-      loading: false
+      loading: false,
+      dragulaCards: null
     };
   },
   computed: {
-    ...mapState({ board: "board" }) // state 중 board를 가져옴
+    ...mapState({
+      board: "board"
+    })
   },
   created() {
     this.fetchData();
   },
+  updated() {
+    if (this.dragulaCards) this.dragulaCards.destroy();
+
+    this.dragulaCards = dragula([
+      ...Array.from(this.$el.querySelectorAll(".card-list"))
+    ]).on("drop", (el, wrapper, target, silblings) => {
+      console.log("drop!");
+
+      const targetCard = {
+        id: el.dataset.cardId * 1, // *1하는 이유는 문자열을 숫자로 바꿔주기 위함.. // carditem에 data-cardId 정의한걸 이렇게 받을 수 있는 듯..
+        pos: 65335
+      };
+
+      let prevCard = null;
+      let nextCard = null;
+
+      Array.from(wrapper.querySelectorAll(".card-item")).forEach(
+        (el, idx, arr) => {
+          const cardId = el.dataset.cardId * 1;
+          if (cardId == targetCard.id) {
+            prevCard =
+              idx > 0
+                ? {
+                    id: arr[idx - 1].dataset.cardId * 1,
+                    pos: arr[idx - 1].dataset.cardPos * 1
+                  }
+                : null;
+
+            nextCard =
+              idx < arr.length - 1
+                ? {
+                    id: arr[idx + 1].dataset.cardId * 1,
+                    pos: arr[idx + 1].dataset.cardPos * 1
+                  }
+                : null;
+          }
+        }
+      );
+
+      if (!prevCard && nextCard) targetCard.pos = nextCard.pos / 2; // 카드가 맨 앞에 삽입
+      else if (!nextCard && prevCard) targetCard.pos = prevCard.pos * 2; // 맨 뒤에 삽입
+      else if (prevCard && nextCard) targetCard.pos = (nextCard.pos + prevCard.pos) / 2; // 중간
+
+      console.log(targetCard);
+      this.UPDATE_CARD(targetCard);
+    });
+  },
   methods: {
-    ...mapActions(["FETCH_BOARD"]),
+    ...mapActions(["FETCH_BOARD", "UPDATE_CARD"]),
     fetchData() {
       this.loading = true;
-      this.FETCH_BOARD({ id: this.$route.params.bid })
-      .then(() => (this.loading = false));
+      this.FETCH_BOARD({ id: this.$route.params.bid }).then(
+        () => (this.loading = false)
+      );
     }
   }
 };
@@ -66,8 +119,8 @@ export default {
   margin: 0;
   height: 32px;
   line-height: 32px;
-} 
-.board-header input[type=text] {
+}
+.board-header input[type="text"] {
   width: 200px;
 }
 .board-header-btn {
@@ -80,7 +133,7 @@ export default {
 }
 .board-header-btn:hover,
 .board-header-btn:focus {
-  background-color: rgba(0,0,0,.15);
+  background-color: rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 .board-title {
