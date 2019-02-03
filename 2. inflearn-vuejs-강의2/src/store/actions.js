@@ -26,6 +26,12 @@ const actions = {
         .then(({accessToken}) => 
             commit('LOGIN', accessToken)
         );
+    },
+    FETCH_CARD({ commit }, {id}) {
+        return api.card.fetch(id).then(data=> {
+            debugger;
+            commit('SET_CARD', data.item)
+        })
     }
 }
 
