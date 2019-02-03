@@ -20,12 +20,12 @@
         class="form-control"
         cols="30"
         rows="3"
-        placeholder="Add a more detailed description..."
+        plcaeholder="Add a more detaild description..."
         :readonly="!toggleDesc"
         @click="toggleDesc=true"
         @blur="onBlurDesc"
-        v-model="card.description"
         ref="inputDesc"
+        v-model="card.description"
       ></textarea>
     </div>
     <div slot="footer"></div>
@@ -40,14 +40,20 @@ export default {
   components: {
     Modal
   },
+  data() {
+    return {
+      toggleTitle: false,
+      toggleDesc: false
+    };
+  },
   computed: {
     ...mapState({
-      card: "card"
+      card: "card",
+      board: "board"
     })
   },
   created() {
-    const id = this.$route.params.cid;
-    this.FETCH_CARD({ id });
+    this.fetchCard();
   },
   watch: {
     // 라우팅에 따른 처리
@@ -57,9 +63,29 @@ export default {
     // }
   },
   methods: {
-    ...mapActions(["FETCH_CARD"]),
+    ...mapActions(["FETCH_CARD", "UPDATE_CARD"]),
     onClose() {
       this.$router.push(`/b/${this.board.id}`);
+    },
+    fetchCard() {
+      const id = this.$route.params.cid;
+      this.FETCH_CARD({ id });
+    },
+    onBlurTitle() {
+      this.toggleTitle = false;
+      const title = this.$refs.inputTitle.value.trim();
+      if (!title) return;
+      this.UPDATE_CARD({ id: this.card.id, title }).then(() =>
+        this.fetchCard()
+      );
+    },
+    onBlurDesc() {
+      this.toggleDesc = false;
+      const description = this.$refs.inputDesc.value.trim();
+      if (!description) return;
+      this.UPDATE_CARD({ id: this.card.id, description }).then(() =>
+        this.fetchCard()
+      );
     }
   }
 };
