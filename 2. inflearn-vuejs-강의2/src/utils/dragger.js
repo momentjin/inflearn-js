@@ -37,10 +37,7 @@ const dragger = {
       }
     );
 
-    return {
-      prev,
-      next
-    }
+    return { prev, next }
   }
 }
 
