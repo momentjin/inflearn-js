@@ -27,11 +27,13 @@ export const setAuthInHeader = token => {
 
 export const board = {
   fetch(id) {
-    debugger;
     return id ? request('get', `/boards/${id}`) : request('get', '/boards')
   },
   create(title) {
     return request('post', '/boards', {title})
+  },
+  destroy(id) {
+    return request('delete', `/boards/${id}`)
   }
 }
 
