@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapMutations, mapState, mapActions } from "vuex";
 import List from "./List.vue";
 import dragger from "../utils/dragger.js";
 
@@ -38,16 +38,19 @@ export default {
     })
   },
   created() {
-    this.fetchData();
+    this.fetchData().then(() => {
+      this.SET_THEME(this.board.bgColor);
+    });
   },
   updated() {
     this.setCardDragabble();
   },
   methods: {
     ...mapActions(["FETCH_BOARD", "UPDATE_CARD"]),
+    ...mapMutations(["SET_THEME"]),
     fetchData() {
       this.loading = true;
-      this.FETCH_BOARD({ id: this.$route.params.bid }).then(
+      return this.FETCH_BOARD({ id: this.$route.params.bid }).then(
         () => (this.loading = false)
       );
     },
