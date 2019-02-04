@@ -20,6 +20,9 @@
             <div class="list-wrapper" v-for="list in board.lists" :key="list.pos">
               <List :data="list"/>
             </div>
+            <div class="list-wrapper">
+              <AddList/>
+            </div>
           </div>
         </div>
       </div>
@@ -32,11 +35,12 @@
 <script>
 import { mapMutations, mapState, mapActions } from "vuex";
 import List from "./List.vue";
+import AddList from "./AddList.vue";
 import BoardSettings from "./BoardSettings.vue";
 import dragger from "../utils/dragger.js";
 
 export default {
-  components: { List, BoardSettings },
+  components: { List, BoardSettings, AddList },
   data() {
     return {
       bid: 0,
@@ -110,16 +114,16 @@ export default {
     },
     onSubmitTitle() {
       this.isEditTitle = false;
-      
+
       this.inputTitle = this.inputTitle.trim();
       if (!this.inputTitle) return;
 
       const id = this.board.id;
       const title = this.inputTitle;
-      
+
       if (title === this.board.title) return;
 
-      this.UPDATE_BOARD({id, title});
+      this.UPDATE_BOARD({ id, title });
     }
   }
 };
