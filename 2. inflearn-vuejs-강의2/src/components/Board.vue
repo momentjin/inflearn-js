@@ -4,6 +4,7 @@
       <div class="board">
         <div class="board-header">
           <span class="board-title">{{board.title}}</span>
+          <a class="board-header-btn show-menu" href @click.prevent="onShowSettings">... Show Menu</a>
         </div>
         <div class="list-section-wrapper">
           <div class="list-section">
@@ -13,7 +14,8 @@
           </div>
         </div>
       </div>
-    </div>
+    </div>  
+    <BoardSettings v-if="isShowBoardSettings"/>
     <router-view></router-view>
   </div>
 </template>
@@ -21,10 +23,11 @@
 <script>
 import { mapMutations, mapState, mapActions } from "vuex";
 import List from "./List.vue";
+import BoardSettings from "./BoardSettings.vue";
 import dragger from "../utils/dragger.js";
 
 export default {
-  components: { List },
+  components: { List, BoardSettings },
   data() {
     return {
       bid: 0,
@@ -34,20 +37,22 @@ export default {
   },
   computed: {
     ...mapState({
-      board: "board"
+      board: "board",
+      isShowBoardSettings: "isShowBoardSettings"
     })
   },
   created() {
     this.fetchData().then(() => {
       this.SET_THEME(this.board.bgColor);
     });
+    this.SET_IS_SHOW_BOARD_SETTINGS(false);
   },
   updated() {
     this.setCardDragabble();
   },
   methods: {
     ...mapActions(["FETCH_BOARD", "UPDATE_CARD"]),
-    ...mapMutations(["SET_THEME"]),
+    ...mapMutations(["SET_THEME", "SET_IS_SHOW_BOARD_SETTINGS"]),
     fetchData() {
       this.loading = true;
       return this.FETCH_BOARD({ id: this.$route.params.bid }).then(
@@ -72,15 +77,20 @@ export default {
           el,
           wrapper,
           candidates: Array.from(wrapper.querySelectorAll(".card-item")),
-          type: 'card'
+          type: "card"
         });
 
-        if (!prev && next) targetCard.pos = next.pos / 2; // 카드가 맨 앞에 삽입
-        else if (!next && prev) targetCard.pos = prev.pos * 2; // 맨 뒤에 삽입
+        if (!prev && next) targetCard.pos = next.pos / 2;
+        // 카드가 맨 앞에 삽입
+        else if (!next && prev) targetCard.pos = prev.pos * 2;
+        // 맨 뒤에 삽입
         else if (prev && next) targetCard.pos = (next.pos + prev.pos) / 2; // 중간
 
         this.UPDATE_CARD(targetCard);
       });
+    },
+    onShowSettings() {
+      this.SET_IS_SHOW_BOARD_SETTINGS(true);
     }
   }
 };
